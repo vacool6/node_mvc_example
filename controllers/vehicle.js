@@ -22,6 +22,9 @@ module.exports.addVehicle = wrapper(async (req, res) => {
   const user = await User.findById(userId);
   const newVehicle = new Vehicle(req.body);
   const accessoriesList = [];
+
+  if (!accessories) return res.send(`Vehicle accessory list is missing`);
+
   for (let i of accessories) {
     const part = await Accessory.find({ name: i.name });
     if (part.length !== 0) {
@@ -40,7 +43,7 @@ module.exports.addVehicle = wrapper(async (req, res) => {
   user.vehicles.push(newVehicle);
   await newVehicle.save();
   await user.save();
-  res.send(`Vehicle added to ${user.username}`);
+  return res.send(`Vehicle added to ${user.username}`);
 });
 
 module.exports.updateVehicleById = wrapper(async (req, res) => {
@@ -50,25 +53,25 @@ module.exports.updateVehicleById = wrapper(async (req, res) => {
 });
 
 module.exports.deleteVehicleById = wrapper(async (req, res) => {
-// 1
-//   const { userId, vehicleId } = req.params;
-//   await User.findByIdAndUpdate(userId, { $pull: { vehicles: vehicleId } });
-//   const accessories = await Accessory.find();
+  // 1
+  //   const { userId, vehicleId } = req.params;
+  //   await User.findByIdAndUpdate(userId, { $pull: { vehicles: vehicleId } });
+  //   const accessories = await Accessory.find();
 
-//   for (let i of accessories) {
-//     const updatedAccessories = [];
-//     for (let j of i.usedIn) {
-//       if (ObjectID(j).valueOf() !== vehicleId) {
-//         updatedAccessories.push(j);
-//       }
-//     }
-//     i.usedIn = updatedAccessories;
-//     await i.save();
-//   }
-//   await Vehicle.findByIdAndDelete(vehicleId);
-//   res.send("Vehicle deleted!");
+  //   for (let i of accessories) {
+  //     const updatedAccessories = [];
+  //     for (let j of i.usedIn) {
+  //       if (ObjectID(j).valueOf() !== vehicleId) {
+  //         updatedAccessories.push(j);
+  //       }
+  //     }
+  //     i.usedIn = updatedAccessories;
+  //     await i.save();
+  //   }
+  //   await Vehicle.findByIdAndDelete(vehicleId);
+  //   res.send("Vehicle deleted!");
 
- // 2
+  // 2
   const { vehicleId } = req.params;
   await User.findByIdAndUpdate(vehicle.owner, {
     $pull: { vehicles: vehicleId },
